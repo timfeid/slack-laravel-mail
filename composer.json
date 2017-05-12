@@ -1,0 +1,17 @@
+{
+    "name": "timfeid/slack-laravel-mail",
+    "description": "Laravel Mail driver that delivers mail to your Slack server",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tim Feid",
+            "email": "tim@timfeid.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "timfeid/slack": "^1.0",
+        "laravel/framework": "^5.4"
+    }
+}
