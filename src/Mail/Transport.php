@@ -4,6 +4,7 @@ namespace TimFeid\SlackLaravelMail\Mail;
 
 use Swift_Mime_Message;
 use TimFeid\Slack\Client;
+use TimFeid\SlackLaravelMail\SlackFields;
 use Illuminate\Mail\Transport\Transport as BaseTransport;
 
 class Transport extends BaseTransport
@@ -23,60 +24,27 @@ class Transport extends BaseTransport
         }
 
         $slack = new Client($this->endpoint);
+        $config = config('services.slackmail');
+        $storage = app('slackmail.storage')->create($message);
+        $fields = with(new SlackFields())->build($message);
+        $body = '```'.preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", strip_tags($message->getBody())).'```';
 
-        $trans = app('slackmail.transport')->create($message);
+        $message = $slack->to($config['channel'] ?? '#emails')
+            ->from($config['from'] ?? 'Emails')
+            ->withIcon(':envelope:')
+            ->attach([
+                'fallback' => trim($body, '`'),
+                'text' => $body,
+                'fields' => $fields,
+                'title' => $message->getSubject(),
+                'title_link' => $this->route($storage->getName()),
+            ]);
 
-        // $random_name = uniqid('email', true);
-        $subject = $message->getSubject();
-
-        // file_put_contents(storage_path($random_name), $message->getBody());
-        $fields = [
-            [
-                'title' => 'Subject',
-                'value' => $subject,
-                'short' => true,
-            ],
-            [
-                'title' => 'To',
-                'value' => implode(', ', array_keys($message->getTo() ?: [])),
-                'short' => true,
-            ],
-            [
-                'title' => 'Cc',
-                'value' => implode(', ', array_keys($message->getCc() ?: [])),
-                'short' => true,
-            ],
-            [
-                'title' => 'Bcc',
-                'value' => implode(', ', array_keys($message->getBcc() ?: [])),
-                'short' => true,
-            ],
-            [
-                'title' => 'From',
-                'value' => implode(', ', array_keys($message->getFrom() ?: [])),
-                'short' => true,
-            ],
-        ];
-
-        $message = '```'.preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", strip_tags($message->getBody())).'```';
-
-        $message = $slack->attach([
-            'fallback' => trim($message, '`'),
-            'text' => $message,
-            'fields' => $fields,
-            'title' => $subject,
-            'title_link' => url('/email-preview/'.$trans->getName()),
-        ])
-            ->to('@timfeid')
-            ->from('Dev Emails')
-            ->withIcon(':envelope:');
-
-        var_dump($slack->getMessagePayload($message));
         $message->send();
     }
 
-    public function register()
+    public function route($name)
     {
-
+        return route(config('services.slackmail.routeName', 'slackmail'), $name);
     }
 }

@@ -12,21 +12,26 @@ class SlackMailServiceProvider extends MailServiceProvider
         parent::registerSwiftTransport();
 
         app('swift.transport')->extend('slack', function($app) {
-          return new Transport(config('services.slack.endpoint', env('SLACK_ENDPOINT')));
+          return new Transport(config('services.slackmail.endpoint', env('SLACK_ENDPOINT')));
         });
     }
 
     public function register()
     {
-        parent::register();
+        $this->registerSlackStorage();
 
-        $this->registerSlackTransport();
+        parent::register();
     }
 
-    public function registerSlackTransport()
+    public function registerSlackStorage()
     {
-        $this->app['slackmail.transport'] = $this->app->share(function () {
-            return new SlackTransportManager($this->app);
+        $this->app['slackmail.storage'] = $this->app->share(function () {
+            return new SlackStorageManager($this->app);
         });
+    }
+
+    public function provides()
+    {
+        return array_merge(parent::provides(), ['slackmail.storage']);
     }
 }
