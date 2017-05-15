@@ -7,6 +7,7 @@ Add `TimFeid\SlackLaravelMail\SlackMailServiceProvider::class,` to your provider
 Comment out `Illuminate\Mail\MailServiceProvider::class,` in your providers list.
 ```php
     // Illuminate\Mail\MailServiceProvider::class,
+    TimFeid\SlackLaravelMail\SlackMailServiceProvider::class,
 ```
 
 ## Config
