@@ -19,6 +19,7 @@ class SlackMailServiceProvider extends MailServiceProvider
     public function register()
     {
         $this->registerSlackStorage();
+        $this->registerSlackFields();
 
         parent::register();
     }
@@ -30,8 +31,15 @@ class SlackMailServiceProvider extends MailServiceProvider
         });
     }
 
+    public function registerSlackFields()
+    {
+        $this->app['slackmail.fields'] = $this->app->share(function () {
+            return new SlackFields();
+        });
+    }
+
     public function provides()
     {
-        return array_merge(parent::provides(), ['slackmail.storage']);
+        return array_merge(parent::provides(), ['slackmail.storage', 'slackmail.fields']);
     }
 }

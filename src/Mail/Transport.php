@@ -26,7 +26,7 @@ class Transport extends BaseTransport
         $slack = new Client($this->endpoint);
         $config = config('services.slackmail');
         $storage = app('slackmail.storage')->create($message);
-        $fields = with(new SlackFields())->build($message);
+        $fields = app('slackmail.fields')->build($message);
         $body = '```'.preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", strip_tags($message->getBody())).'```';
 
         $message = $slack->to($config['channel'] ?? '#emails')
