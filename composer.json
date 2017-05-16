@@ -10,6 +10,11 @@
         }
     ],
     "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "TimFeid\\Slack\\": "src/"
+        }
+    },
     "require": {
         "timfeid/slack": "^1.0",
         "laravel/framework": "^5.2"
