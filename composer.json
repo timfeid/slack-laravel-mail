@@ -12,7 +12,7 @@
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
-            "TimFeid\\Slack\\": "src/"
+            "TimFeid\\SlackLaravelMail\\": "src/"
         }
     },
     "require": {
