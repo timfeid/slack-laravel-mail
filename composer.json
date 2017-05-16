@@ -12,6 +12,6 @@
     "minimum-stability": "stable",
     "require": {
         "timfeid/slack": "^1.0",
-        "laravel/framework": "^5.4"
+        "laravel/framework": "^5.2"
     }
 }
