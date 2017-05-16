@@ -5,6 +5,7 @@ namespace TimFeid\SlackLaravelMail\Mail;
 use Swift_Mime_Message;
 use TimFeid\Slack\Client;
 use TimFeid\SlackLaravelMail\SlackFields;
+use TimFeid\SlackLaravelMail\SlackException;
 use Illuminate\Mail\Transport\Transport as BaseTransport;
 
 class Transport extends BaseTransport
