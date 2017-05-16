@@ -45,3 +45,12 @@ Add the following config to your `services.php` config file.
         ],
     ],
 ```
+
+## Route
+Add this route to your routes file. 
+```php
+    if (!app()->environment('production')) {
+        Route::get('/slack-mail/{name}', '\TimFeid\SlackLaravelMail\Controllers\SlackMailController@slackMail')
+            ->name('slackmail');
+    }
+```
