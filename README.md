@@ -55,7 +55,7 @@ As you can probably tell, .env is encouraged for a per-environment setup
 ```
 
 ## Route
-Add this route to your routes file. 
+Add this route to your routes file. The route can be set up however you'd like, but it *must* have `slackmail` as the name `->name('slackmail')`
 ```php
     if (!app()->environment('production')) {
         Route::get('/slack-mail/{name}', '\TimFeid\SlackLaravelMail\Controllers\SlackMailController@slackMail')
@@ -97,6 +97,7 @@ use TimFeid\SlackLaravelMail\SlackFields as BaseSlackFields;
 
 class SlackFields extends BaseSlackFields
 {
+    // buildYourFieldNameField() will allow you to add the field 'your-field-name' to your `fields` config
     public function buildSendgridField()
     {
         // $this->message is an instance of Swift_Message
