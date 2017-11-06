@@ -2,7 +2,7 @@
 
 namespace TimFeid\SlackLaravelMail\Mail;
 
-use Swift_Mime_Message;
+use Swift_Mime_SimpleMessage;
 use TimFeid\Slack\Client;
 use TimFeid\SlackLaravelMail\SlackFields;
 use TimFeid\SlackLaravelMail\SlackException;
@@ -18,7 +18,7 @@ class Transport extends BaseTransport
         $this->endpoint = $endpoint;
     }
 
-    public function send(Swift_Mime_Message $message, &$failedRecipients = null)
+    public function send(Swift_Mime_SimpleMessage $message, &$failedRecipients = null)
     {
         if (!$this->endpoint) {
             throw new SlackException('Please provide a slack endpoint in your config file.');
