@@ -17,6 +17,6 @@
     },
     "require": {
         "timfeid/slack": "^1.0",
-        "laravel/framework": "^5.2"
+        "laravel/framework": "^5.5"
     }
 }

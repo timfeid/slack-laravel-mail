@@ -34,7 +34,7 @@ Add the following config to your `services.php` config file.
         'from' => 'Emails',
         // Channel you'd like to send your messages to
         // @username to send private messages from @Slackbot
-        'channel' => '#emails',
+        'channel' => env('SLACKMAIL_TO', '#emails'),
         // Fields you would like to show up in your message
         'fields' => [
             'subject',
@@ -44,4 +44,72 @@ Add the following config to your `services.php` config file.
             'from',
         ],
     ],
+```
+
+### Dot File (.env)
+As you can probably tell, .env is encouraged for a per-environment setup
+```
+    SLACKMAIL_ENDPOINT="https://hooks.slack.com/services..."
+    SLACKMAIL_DRIVER="cache"
+    SLACKMAIL_TO="@username"
+```
+
+## Route
+Add this route to your routes file. The route can be set up however you'd like, but it *must* have `slackmail` as the name `->name('slackmail')`
+```php
+    if (!app()->environment('production')) {
+        Route::get('/slack-mail/{name}', '\TimFeid\SlackLaravelMail\Controllers\SlackMailController@slackMail')
+            ->name('slackmail');
+    }
+```
+
+
+### Extending the `fields`
+You'll want to create service provider that extends `SlackMailServiceProvider` and overwrite the `registerSlackFields` method.
+```php
+
+<?php
+
+namespace App\Providers;
+
+use TimFeid\SlackLaravelMail\SlackMailServiceProvider;
+// Your SlackFields class here
+use App\Services\Slack\SlackFields;
+
+class MailServiceProvider extends SlackMailServiceProvider
+{
+    public function registerSlackFields()
+    {
+        $this->app['slackmail.fields'] = $this->app->share(function () {
+            return new SlackFields();
+        });
+    }
+}
+```
+
+#### Example SlackFields class
+```php
+<?php
+
+namespace App\Services\Slack;
+
+use TimFeid\SlackLaravelMail\SlackFields as BaseSlackFields;
+
+class SlackFields extends BaseSlackFields
+{
+    // buildYourFieldNameField() will allow you to add the field 'your-field-name' to your `fields` config
+    public function buildSendgridField()
+    {
+        // $this->message is an instance of Swift_Message
+        $sendgrid = $this->message->getHeaders()->get('x-smtpapi');
+        $sendgrid = $sendgrid ? $sendgrid->getValue() : '';
+
+        return [
+            'title' => 'Sendgrid Headers',
+            'value' => json_encode(json_decode($sendgrid), JSON_PRETTY_PRINT),
+            'short' => false,
+        ];
+    }
+}
+
 ```
