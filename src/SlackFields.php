@@ -76,4 +76,19 @@ class SlackFields
             'short' => true,
         ];
     }
+
+    public function buildAttachmentsField()
+    {
+        $attachments = [];
+        foreach ($this->message->getChildren() as $child) {
+             $attachments = str_replace('attachment; filename=', null, $child->getHeaders()->get('content-disposition')->getFieldBody());
+        }
+
+        return [
+            'title' => 'Attachments',
+            'value' => '```'.json_encode([
+                $attachments,
+            ], JSON_PRETTY_PRINT).'```',
+        ];
+    }
 }

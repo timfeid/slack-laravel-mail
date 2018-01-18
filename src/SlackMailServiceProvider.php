@@ -2,16 +2,15 @@
 
 namespace TimFeid\SlackLaravelMail;
 
-use Illuminate\Mail\MailServiceProvider;
+use Illuminate\Mail\TransportManager;
+use Illuminate\Support\ServiceProvider;
 use TimFeid\SlackLaravelMail\Mail\Transport;
 
-class SlackMailServiceProvider extends MailServiceProvider
+class SlackMailServiceProvider extends ServiceProvider
 {
-    public function registerSwiftTransport()
+    public function extendTransportManager($manager)
     {
-        parent::registerSwiftTransport();
-
-        app('swift.transport')->extend('slack', function($app) {
+        $manager->extend('slack', function($app) {
           return new Transport(config('services.slackmail.endpoint', env('SLACK_ENDPOINT')));
         });
     }
@@ -21,25 +20,25 @@ class SlackMailServiceProvider extends MailServiceProvider
         $this->registerSlackStorage();
         $this->registerSlackFields();
 
-        parent::register();
+        $this->app->afterResolving(TransportManager::class, function(TransportManager $manager) {
+            $this->extendTransportManager($manager);
+        });
     }
 
     public function registerSlackStorage()
     {
-        $this->app['slackmail.storage'] = $this->app->share(function () {
+        $this->app->singleton('slackmail.storage', function() {
             return new SlackStorageManager($this->app);
         });
     }
 
     public function registerSlackFields()
     {
-        $this->app['slackmail.fields'] = $this->app->share(function () {
-            return new SlackFields();
-        });
+        $this->app->singleton('slackmail.fields', SlackFields::class);
     }
 
     public function provides()
     {
-        return array_merge(parent::provides(), ['slackmail.storage', 'slackmail.fields']);
+        return ['slackmail.storage', 'slackmail.fields'];
     }
 }
