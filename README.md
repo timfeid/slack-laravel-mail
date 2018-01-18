@@ -1,12 +1,11 @@
+
 # Set up
 ## Installation
 `composer install timfeid/laravel-slack-mail`
 
 Add `TimFeid\SlackLaravelMail\SlackMailServiceProvider::class,` to your providers list in your `app.php` config.
 
-Comment out `Illuminate\Mail\MailServiceProvider::class,` in your providers list.
 ```php
-    // Illuminate\Mail\MailServiceProvider::class,
     TimFeid\SlackLaravelMail\SlackMailServiceProvider::class,
 ```
 
@@ -42,6 +41,7 @@ Add the following config to your `services.php` config file.
             'cc',
             'bcc',
             'from',
+            'attachments',
         ],
     ],
 ```
@@ -67,24 +67,21 @@ Add this route to your routes file. The route can be set up however you'd like, 
 ### Extending the `fields`
 You'll want to create service provider that extends `SlackMailServiceProvider` and overwrite the `registerSlackFields` method.
 ```php
-
 <?php
 
 namespace App\Providers;
 
-use TimFeid\SlackLaravelMail\SlackMailServiceProvider;
-// Your SlackFields class here
 use App\Services\Slack\SlackFields;
+use TimFeid\SlackLaravelMail\SlackMailServiceProvider as BaseProvider;
 
-class MailServiceProvider extends SlackMailServiceProvider
+class SlackMailServiceProvider extends BaseProvider
 {
     public function registerSlackFields()
     {
-        $this->app['slackmail.fields'] = $this->app->share(function () {
-            return new SlackFields();
-        });
+        $this->app->singleton('slackmail.fields', SlackFields::class);
     }
 }
+
 ```
 
 #### Example SlackFields class
@@ -97,17 +94,14 @@ use TimFeid\SlackLaravelMail\SlackFields as BaseSlackFields;
 
 class SlackFields extends BaseSlackFields
 {
-    // buildYourFieldNameField() will allow you to add the field 'your-field-name' to your `fields` config
     public function buildSendgridField()
     {
-        // $this->message is an instance of Swift_Message
-        $sendgrid = $this->message->getHeaders()->get('x-smtpapi');
-        $sendgrid = $sendgrid ? $sendgrid->getValue() : '';
-
         return [
             'title' => 'Sendgrid Headers',
-            'value' => json_encode(json_decode($sendgrid), JSON_PRETTY_PRINT),
-            'short' => false,
+            'value' => '```'.json_encode([
+                'categories' => $this->message->getCategories(),
+                'custom_args' => $this->message->getArguments(),
+            ], JSON_PRETTY_PRINT).'```',
         ];
     }
 }
