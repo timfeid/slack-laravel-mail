@@ -1,7 +1,7 @@
 
 # Set up
 ## Installation
-`composer require timfeid/laravel-slack-mail`
+`composer require timfeid/slack-laravel-mail`
 
 Add `TimFeid\SlackLaravelMail\SlackMailServiceProvider::class,` to your providers list in your `app.php` config.
 
