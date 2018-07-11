@@ -1,3 +1,4 @@
+![alt text](https://raw.githubusercontent.com/timfeid/slack-laravel-mail/master/image.png)
 
 # Set up
 ## Installation
