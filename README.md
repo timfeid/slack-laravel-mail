@@ -52,6 +52,8 @@ As you can probably tell, .env is encouraged for a per-environment setup
     SLACKMAIL_ENDPOINT="https://hooks.slack.com/services..."
     SLACKMAIL_DRIVER="cache"
     SLACKMAIL_TO="@username"
+    
+    MAIL_DRIVER="slack" // Activate slackmail as your mail driver
 ```
 
 ## Route
