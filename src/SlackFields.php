@@ -81,7 +81,10 @@ class SlackFields
     {
         $attachments = [];
         foreach ($this->message->getChildren() as $child) {
-             $attachments = str_replace('attachment; filename=', null, $child->getHeaders()->get('content-disposition')->getFieldBody());
+            $contentDisposition = $child->getHeaders()->get('content-disposition');
+            if ($contentDisposition) {
+                $attachments[] = str_replace('attachment; filename=', null, $contentDisposition->getFieldBody());
+            }
         }
 
         return [
