@@ -7,15 +7,21 @@ use TimFeid\SlackLaravelMail\SlackNotFoundException;
 
 class Cache extends SlackStorage
 {
-    public function create($message) : SlackStorage
+    public function create($message): SlackStorage
     {
         $ttl = config('services.slackmail.cache.ttl', 60);
-        $this->cache()->put($this->getName(), $message->getBody(), $ttl);
 
-        return $this;
+        $created = new self();
+        $created->cache()->put(
+            $created->getName(),
+            $message->getBody(),
+            $ttl
+        );
+
+        return $created;
     }
 
-    public function get($name) : String
+    public function get($name): String
     {
         if (!$this->cache()->has($name)) {
             throw new SlackNotFoundException("Unable to find '$name'");
