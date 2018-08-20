@@ -10,14 +10,16 @@ class File extends SlackStorage
 {
     public function create($message) : SlackStorage
     {
-        $file = $this->path($this->getName());
+        $created = new self();
+        
+        $file = $created->path($created->getName());
         if (!is_writable($name)) {
             throw new SlackException("Unable to write to file '$file'");
         }
 
         file_put_contents($name, $message->getBody());
 
-        return $this;
+        return $created;
     }
 
     public function path($name)
